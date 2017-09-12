@@ -1,45 +1,125 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>One</title>
+    <meta charset="utf-8">
+    <!--code here-->
+    <title>demo</title>
+    <style>
+        body,html{
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+            color: #000000;
+        }
+        table{
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+        thead{
+            background: #3d444c;
+            color: #ffffff;
+        }
+        td,th{
+            border: 1px solid #e1e1e1;
+            padding: 0;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+        }
+
+    </style>
 </head>
+
 <body>
-    <script>
-        function getQueryString(name){
-            var nums=window.location.search.length>0?window.location.search.substring(1):"";
-            var re;
-            var sq=nums.length>0?nums.split("&"):[];
-            for(var i=0;i<sq.length;i++){
-                var item=sq[i].split("=");
-                console.log(encodeURIComponent(item[0]));
-                if(encodeURIComponent(item[0])==name){
-                    return sq[i].split("=")[1];
-                }
-            }
-            return null;
-        }
-        function getQueryStringArgs(){
-            var nums=window.location.search.length>0?window.location.search.substring(1):"";
-            var args={};
-            var items=nums.length>0?nums.split("&"):[];
-            var name,value;
-            var len=items.length;
-            for(var i=0;i<len;i++){
-                var item=items[i].split("=");
-                name=decodeURIComponent(item[0]);
-                value=decodeURIComponent(item[1]);
-                if(name){
-                    args[name]=value;
-                }
+<table id="jsTrolley">
+    <thead><tr><th>名称</th><th>价格</th><th>操作</th></tr></thead>
+    <tbody>
+    <tr><td>产品1</td><td>10.00</td><td><a href="javascript:void(0);">删除</a></td></tr>
+    <tr><td>产品2</td><td>30.20</td><td><a href="javascript:void(0);">删除</a></td></tr>
+    <tr><td>产品3</td><td>20.50</td><td><a href="javascript:void(0);">删除</a></td></tr>
+    </tbody>
+    <tfoot><tr><th>总计</th><td colspan="2">60.70(3件商品)</td></tr></tfoot>
+</table>
 
+<script>
+
+    window.onload=function(){
+        var doc = window.document ;
+        var cl = doc.getElementsByTagName('tbody')[0];
+        cl = cl.getElementsByTagName('tr')[0];
+        cl = cl.cloneNode(true) ;
+        function add(item){
+            var clo = cl.cloneNode(true) ;
+            var k = doc.getElementsByTagName('tbody')[0];
+            var name = clo.getElementsByTagName('td')[0];
+            name.innerHTML = item.name;
+            var price = clo.getElementsByTagName('td')[1];
+            price.innerHTML = item.price;
+            globalPrice.changePrice(item.price,1);
+            var a = clo.getElementsByTagName('a')[0];
+            a.onclick = function(){
+                //console.log('fd');
+                changeDel(this);
+            };
+            k.appendChild(clo);
+        }
+        function bind(){
+            var allt = (doc.getElementsByTagName('tbody')[0]).getElementsByTagName('tr');
+            for(var i=0; i<allt.length;i++){
+                (function(n){
+                    var a = allt[n].getElementsByTagName('a')[0];
+                    a.onclick =function(){
+                        changeDel(this);
+                    };
+                })(i)
             }
-            return args;
+        }
+        function changeDel(that){
+            var tr = that.parentNode.parentNode ;
+            var price = tr.getElementsByTagName('td')[1];
+            price = price.innerHTML;
+            price = parseFloat(price);
+            globalPrice.changePrice(price,-1);
+            that.parentNode.parentNode.parentNode.removeChild(that.parentNode.parentNode);
+        }
+        var globalPrice = {allPrice:0};
+        globalPrice.changePrice=function(price,flag){
+            price *=flag ;
+            var priceTag =
+                    (doc.getElementsByTagName('tfoot')[0]).getElementsByTagName('td')[0];
+            var nowPriceTag = priceTag.innerHTML
+            var nowPrice =(nowPriceTag.match(/^[\d|\.]+/i))[0];
+            nowPrice=parseFloat(nowPrice);
+            nowPrice +=price ;
+            var tmp = nowPrice*100 ;
+            tmp = parseInt(tmp);
+            nowPrice = tmp.toString() ;
+            var length = nowPrice.length ;
+            tmp='';
+            for(var i=0;i<length-2;i++)
+            {
+                tmp+=nowPrice[i] ;
+            }
+            tmp+=('\.'+nowPrice[length-2]+nowPrice[length-1]);
+            console.log(tmp);
+            nowPrice = tmp;
+            console.log(nowPrice);
+            var time = (nowPriceTag.match(/\d+/g))[2];
+            time = parseInt(time);
+            time +=flag  ;
+            time = time.toString() ;
+            //console.log(time);
+            nowPriceTag=nowPriceTag.replace(/^[\d|\.]+/i,nowPrice) ;
+            //console.log(nowPriceTag);
+            nowPriceTag=nowPriceTag.replace(/\(\d+/i,'('+time) ;
+            priceTag.innerHTML=nowPriceTag;
 
         }
-        var re=getQueryStringArgs();
-        console.log(re["name"]);
-        console.log(getQueryString("password"));
-    </script>
+        bind();
+        add({'name':32,'price':32});
+        add({'name':'fda','price':43});
+    }
+</script>
 </body>
 </html>
