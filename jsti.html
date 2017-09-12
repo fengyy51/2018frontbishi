@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>【京东2018秋招前端工程师】编程题-表格操作</title>
+    <meta charset="utf-8">
+
+</head>
+<body>
+<script type="text/javascript">
+    window.onload=function(){
+        bind();
+        money();
+    };
+</script>
+<script type="text/javascript">
+    function bind() {
+        var a = document.getElementsByTagName("a");
+        console.log(a);
+        var len = a.length;
+        for (var i = 0; i < len; i++) {
+            a[i].onclick = function(event){
+                var parentNode=event.srcElement.parentNode.parentNode;
+                console.log(parentNode.rowIndex);
+                document.getElementsByTagName("table")[0].deleteRow(parentNode.rowIndex);
+                money();
+            };
+        }
+    }
+    function money(){
+        var trItem=document.getElementsByTagName("tr");
+        var n=trItem.length;
+        var value= 0,num=0;
+        for(var i=1;i<n-1;i++){
+            var moneyItem=trItem[i].firstChild.nextSibling;
+            console.log(moneyItem);
+            console.log(moneyItem.innerHTML);
+            value+=parseFloat(moneyItem.innerHTML);
+            num++;
+        }
+        document.getElementById("money").innerHTML=value.toFixed(2)+"("+num+"件商品)";
+    }
+    function addRw(obj){
+    var len=obj.length;
+    console.log(len);
+    for(var i=0;i<len;i++){
+        var newRow=document.createElement("tr");
+        newRow.align="center";
+        var newTd1=document.createElement("td");
+        newTd1.innerHTML=obj[i].name;
+        var newTd2=document.createElement("td");
+        newTd2.innerHTML=(obj[i].price).toFixed(2);
+        var newTd3=document.createElement("td");
+        newTd3.className="delete";
+        var newTd3a=document.createElement("a");
+        newTd3a.className="deletehref";
+        newTd3a.href="#";
+        newTd3a.innerHTML="删除";
+        newTd3.appendChild(newTd3a);
+        newRow.appendChild(newTd1);
+        newRow.appendChild(newTd2);
+        newRow.appendChild(newTd3);
+        var item=document.getElementById("heji").parentNode;
+        item.insertBefore(newRow,document.getElementById("heji"));
+    }
+    money();
+    bind();
+}
+</script>
+    <button id="addBtn" type="button" onclick="addRw([{name:333,price:45},{name:444,price:25.3}])">添加商品</button>
+    <!--<input type="button"  id="addBtn" value="">-->
+    <table width="100%" align="center" border="1" >
+        <tr align="center"><td>名称</td><td>价格</td><td>操作</td>
+        </tr>
+        <tr align="center"><td>产品1</td><td>10.00</td><td class="delete"><a class="deletehref" href="#">删除</a></td>
+        </tr>
+        <tr align="center"><td>产品2</td><td>30.20</td><td class="delete"><a class="deletehref" href="#">删除</a></td>
+        </tr>
+        <tr align="center"><td>产品3</td><td>20.50</td><td class="delete"><a class="deletehref" href="#">删除</a></td>
+        </tr>
+        <tr id="heji" align="center"><td>总计</td><td colspan="2" id="money" align="center"></td>
+        </tr>
+    </table>
+
+</body>
+</html>
